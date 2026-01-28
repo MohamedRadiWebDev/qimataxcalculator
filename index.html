@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حاسبة الضرائب المصرية | تنسيق احترافي</title>
+    <title>Tax</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -185,15 +185,15 @@
 
 <div class="container">
     <header>
-        <h1>حاسبة الضرائب المصرية (شهرياً)</h1>
-        <p>بتحسب الوعاء وتوزعه على الشرائح عشان تعرف مليمك رايح فين</p>
+        <h1>حاسبة الضرائب</h1>
+        <p>بتحسب الوعاء وتوزعه على الشرائح عشان تعرف القرشنات راحوا فين</p>
     </header>
 
     <div class="card">
         <div class="input-grid">
             <!-- Salary Input -->
             <div class="input-group">
-                <label>المرتب الشهري (Gross)</label>
+                <label>المرتب الشهري </label>
                 <input type="number" id="salary" value="15000" oninput="calculate()">
             </div>
 
@@ -239,19 +239,19 @@
 
     <!-- Visualizers -->
     <div class="card">
-        <h3 style="margin-bottom: 10px;">1. توزيع الأكواب (نظرة سريعة)</h3>
+        <h3 style="margin-bottom: 10px;">1. توزيع الأكواب </h3>
         <div class="cups-container" id="cups"></div>
 
-        <h3 style="margin-top: 30px; margin-bottom: 10px;">2. سلم الشرائح (بالتفصيل الممل)</h3>
+        <h3 style="margin-top: 30px; margin-bottom: 10px;">2. سلم الشرائح </h3>
         <div class="stairs-container" id="stairs"></div>
     </div>
 
     <div class="egyptian-steps">
-        <h3>الحسبة مشيت إزاي؟ (بالبلدي كده)</h3>
+        <h3>الحسبة مشيت إزاي؟ (عالدوغري)</h3>
         <ul>
             <li>بناخد مرتبك الشهري، نشيل منه <strong>التأمينات</strong> وكمان <strong>إعفاء شخصي</strong> (1,667 جنيه).</li>
             <li>اللي بيفضل ده بنسميه "الوعاء"، بنضربه في 12 عشان نطلع "الوعاء السنوي" اللي بتتحسب عليه الضريبة.</li>
-            <li>الوعاء السنوي ده بقى بنصبه في "الأكواب" اللي فوق دي بالترتيب.. أول 40 ألف جنيه "مية باردة" مفيش عليهم ضريبة.</li>
+            <li>الوعاء السنوي ده بقى بنصبه في "الكوبايات" اللي فوق دي بالترتيب.. أول 40 ألف جنيه "بالصلاة علي النبي مية باردة" مفيش عليهم ضريبة.</li>
             <li>كل ما المبلغ يزيد، يخش في كباية أغلى (نسبة ضريبة أعلى).</li>
             <li>في الآخر بنجمع اللي طلع من كل الكبايات ونقسمه على 12 عشان نطلع نصيب الشهر اللي بيتخصم منك.</li>
         </ul>

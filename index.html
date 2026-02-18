@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tax</title>
+    <title>حاسبة الضرائب المصرية | تنسيق احترافي</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -170,9 +170,47 @@
             border-radius: 16px;
             padding: 24px;
             margin-top: 25px;
+            margin-bottom: 25px;
         }
         .egyptian-steps h3 { color: #92400e; margin-bottom: 15px; }
         .egyptian-steps li { margin-bottom: 10px; font-size: 0.95rem; color: #78350f; list-style-type: '✅ '; padding-right: 5px; }
+
+        /* Explanation Box CSS */
+        .explain-box{
+            background:#f8fafc;
+            border:1px solid var(--border);
+            border-radius:14px;
+            padding:16px;
+        }
+        .explain-box ol{
+            margin: 0;
+            padding-right: 18px;
+        }
+        .explain-box li{
+            margin: 10px 0;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+        .badge{
+            display:inline-block;
+            padding:2px 8px;
+            border-radius:999px;
+            background:#eff6ff;
+            border:1px solid #dbeafe;
+            color: var(--primary);
+            font-weight:800;
+            font-size:0.85rem;
+            margin-left:6px;
+        }
+        .mono{
+            font-variant-numeric: tabular-nums;
+            font-weight:800;
+        }
+        .small-note{
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top:10px;
+        }
 
         @media (max-width: 600px) {
             .step { grid-template-columns: 1fr 1fr; text-align: center; }
@@ -185,15 +223,15 @@
 
 <div class="container">
     <header>
-        <h1>حاسبة الضرائب</h1>
-        <p>بتحسب الوعاء وتوزعه على الشرائح عشان تعرف القرشنات راحوا فين</p>
+        <h1>حاسبة الضرائب المصرية (شهرياً)</h1>
+        <p>بتحسب الوعاء وتوزعه على الشرائح عشان تعرف مليمك رايح فين</p>
     </header>
 
     <div class="card">
         <div class="input-grid">
             <!-- Salary Input -->
             <div class="input-group">
-                <label>المرتب الشهري </label>
+                <label>المرتب الشهري (Gross)</label>
                 <input type="number" id="salary" value="15000" oninput="calculate()">
             </div>
 
@@ -239,22 +277,28 @@
 
     <!-- Visualizers -->
     <div class="card">
-        <h3 style="margin-bottom: 10px;">1. توزيع الأكواب </h3>
+        <h3 style="margin-bottom: 10px;">1. توزيع الأكواب (نظرة سريعة)</h3>
         <div class="cups-container" id="cups"></div>
 
-        <h3 style="margin-top: 30px; margin-bottom: 10px;">2. سلم الشرائح </h3>
+        <h3 style="margin-top: 30px; margin-bottom: 10px;">2. سلم الشرائح (بالتفصيل الممل)</h3>
         <div class="stairs-container" id="stairs"></div>
     </div>
 
     <div class="egyptian-steps">
-        <h3>الحسبة مشيت إزاي؟ (عالدوغري)</h3>
+        <h3>الحسبة مشيت إزاي؟ (بالبلدي كده)</h3>
         <ul>
             <li>بناخد مرتبك الشهري، نشيل منه <strong>التأمينات</strong> وكمان <strong>إعفاء شخصي</strong> (1,667 جنيه).</li>
             <li>اللي بيفضل ده بنسميه "الوعاء"، بنضربه في 12 عشان نطلع "الوعاء السنوي" اللي بتتحسب عليه الضريبة.</li>
-            <li>الوعاء السنوي ده بقى بنصبه في "الكوبايات" اللي فوق دي بالترتيب.. أول 40 ألف جنيه "بالصلاة علي النبي مية باردة" مفيش عليهم ضريبة.</li>
+            <li>الوعاء السنوي ده بقى بنصبه في "الأكواب" اللي فوق دي بالترتيب.. أول 40 ألف جنيه "مية باردة" مفيش عليهم ضريبة.</li>
             <li>كل ما المبلغ يزيد، يخش في كباية أغلى (نسبة ضريبة أعلى).</li>
             <li>في الآخر بنجمع اللي طلع من كل الكبايات ونقسمه على 12 عشان نطلع نصيب الشهر اللي بيتخصم منك.</li>
         </ul>
+    </div>
+
+    <!-- Step-by-Step Explanation Card -->
+    <div class="card" id="explainCard">
+        <h3 style="margin-bottom: 12px;">📌 شرح الحسبة خطوة بخطوة</h3>
+        <div id="explainSteps"></div>
     </div>
 </div>
 
@@ -316,6 +360,7 @@ function calculate() {
     document.getElementById('resAnnualTax').innerText = totalTax.toLocaleString(undefined, {maximumFractionDigits: 0}) + ' ج.م';
 
     renderVisuals(taxableAnnual, bracketDetails);
+    renderExplainSteps(salaryMonthly, insuranceMonthly, taxableMonthly, taxableAnnual, bracketDetails, totalTax);
 }
 
 function renderVisuals(taxableAnnual, details) {
@@ -327,7 +372,6 @@ function renderVisuals(taxableAnnual, details) {
         const cup = document.createElement('div');
         cup.className = 'cup-wrapper';
         
-        // استخدام toLocaleString لتنسيق الرقم بالفواصل أسفل الكوب
         const formattedAmount = d.amount.toLocaleString(undefined, {maximumFractionDigits: 0});
         
         cup.innerHTML = `
@@ -356,7 +400,89 @@ function renderVisuals(taxableAnnual, details) {
     });
 }
 
-// تشغيل الحسابات لأول مرة عند تحميل الصفحة
+// Helper formatting function for money
+function money(n, digits = 0){
+  return (n || 0).toLocaleString(undefined, {minimumFractionDigits: digits, maximumFractionDigits: digits}) + " ج.م";
+}
+
+function renderExplainSteps(salaryMonthly, insuranceMonthly, taxableMonthly, taxableAnnual, details, totalTax){
+  const box = document.getElementById("explainSteps");
+  if(!box) return;
+
+  const monthlyTax = totalTax / 12;
+
+  // Filter out used brackets for the explanation (keeping the exempt one for context)
+  const used = details.filter(d => d.amount > 0 || d.rate === 0);
+
+  const bracketsLines = used.map((d) => {
+    const pct = (d.rate * 100).toFixed(1).replace(".0","");
+    return `
+      <li>
+        <span class="badge">${d.label}</span>
+        (حدها: <span class="mono">${money(d.limit)}</span>)
+        دخل فيها: <span class="mono">${money(d.amount)}</span>
+        × <span class="mono">${pct}%</span>
+        = <span class="mono">${money(d.tax, 2)}</span>
+      </li>
+    `;
+  }).join("");
+
+  box.innerHTML = `
+    <div class="explain-box">
+      <ol>
+        <li>
+          <strong>بنبدأ بالمرتب الشهري:</strong>
+          <span class="mono">${money(salaryMonthly)}</span>
+        </li>
+
+        <li>
+          <strong>نخصم تأمينات الموظف (لو موجودة):</strong>
+          <span class="mono">${money(insuranceMonthly)}</span>
+          <div class="small-note">⚠️ بنخصم <b>حصة الموظف</b> فقط لأنها بتقلّل الوعاء الضريبي.</div>
+        </li>
+
+        <li>
+          <strong>نخصم الإعفاء الشخصي الشهري:</strong>
+          <span class="mono">${money(EXEMPTION_MONTHLY, 2)}</span>
+          <div class="small-note">الإعفاء السنوي = <b>${money(PERSONAL_EXEMPTION_ANNUAL)}</b> (متقسم على 12).</div>
+        </li>
+
+        <li>
+          <strong>يبقى الوعاء الشهري (الخاضع للضريبة):</strong>
+          <span class="mono">${money(taxableMonthly, 2)}</span>
+          ${taxableMonthly < 0.01 ? `<div class="small-note">✅ الوعاء طلع صفر/سالب → مفيش ضريبة.</div>` : ``}
+        </li>
+
+        <li>
+          <strong>نحوّله سنوي:</strong>
+          الوعاء السنوي = الوعاء الشهري × 12
+          = <span class="mono">${money(taxableAnnual)}</span>
+        </li>
+
+        <li>
+          <strong>نوزّع الوعاء السنوي على الشرائح:</strong>
+          <ul style="margin-top:10px; padding-right: 18px;">
+            ${bracketsLines || `<li>مفيش شرائح لأن الوعاء = 0</li>`}
+          </ul>
+        </li>
+
+        <li>
+          <strong>نجمع ضريبة الشرائح = الضريبة السنوية:</strong>
+          <span class="mono">${money(totalTax)}</span>
+        </li>
+
+        <li>
+          <strong>نطلع الضريبة الشهرية:</strong>
+          الضريبة الشهرية = الضريبة السنوية ÷ 12
+          = <span class="mono">${money(monthlyTax, 2)}</span>
+        </li>
+      </ol>
+
+    </div>
+  `;
+}
+
+// Initial calculation on load
 calculate();
 </script>
 
